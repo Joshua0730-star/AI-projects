@@ -1,0 +1,88 @@
+version: 1.0.0
+
+project_info:
+  service_name: "price_house"
+  workflow_type: "training"
+  experiment_id: "EXP-005"
+  stage: "mvp"
+  description: "Entrenamiento de MLP para predicción de precios de casas - Experimento 3"
+  tags:
+    - price_house
+    - mlp
+    - training
+    - tabular
+    - regression
+
+environment:
+  device: "auto"
+  seed: 42
+  workers: 0
+
+data_source:
+  dataset_name: "california_housing"
+  dataset_version: "v1.0.0"
+  dataset_source: "sklearn"
+  data_path:
+    artifact_path: "model"
+    preprocessor_filename: "california_housing_preprocessor.joblib"
+  version_tag: "v1"
+
+preprocessing_params: "N/A"
+
+model_config:
+  model_name: "05_price_house_mlp_housing_model_v1.0.0.pt"
+  model_family: "mlp"
+  model_version: "v1.0.0"
+  task: "regression"
+
+  architecture:
+    hidden_layers: [256, 128, 64, 32]
+    use_batch_norm: true
+    activation_fn: "ReLU"
+    dropout_rate: 0.3
+
+training_params:
+  test_size: 0.2
+  random_state: 42
+  epochs: 50
+  batch_size: 32
+
+  optimizer:
+    name: "Adam"
+    learning_rate: 0.0005
+    weight_decay: 0.0001
+
+  loss_function:
+    name: "MSELoss"
+
+  scheduler:
+    name: "ReduceLROnPlateau"
+    patience: 5
+    factor: 0.5
+
+  early_stopping:
+    patience: 10
+    delta: 0.001
+
+evaluation_params:
+  batch_size: 1
+  metrics:
+    - mse
+    - mae
+    - rmse
+    - r2
+    - mape
+  timing_metrics:
+    - average_inference_time
+    - average_processing_time
+    - total_benchmark_time
+  save_predictions: false
+  save_failed_cases: false
+
+mlops_config:
+  tracking_uri: "http://127.0.0.1:5000"
+  experiment_name: "price_house/training"
+  run_name: "EXP_005-price_house-MLP-california_housing_v100-training"
+  artifact_root: ".mlflow/artifacts"
+
+benchmark_specific: "N/A"

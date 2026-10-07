@@ -1,0 +1,40 @@
+# Python and virtual environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local environment and editor files
+.env
+.env.*
+.vscode/
+.idea/
+
+# MLflow tracking database and artifacts
+mlflow.db
+mlflow.db-*
+mlartifacts/
+mlruns/
+.mlflow/
+best_model_temp.pt
+
+# Locally generated models and preprocessing artifacts
+artifacts/*
+!artifacts/.gitkeep
+models/*.pt
+models/*.pth
+models/*.pkl
+models/*.joblib
+src/training/model/*.pt
+src/training/model/*.pth
+src/training/model/*.pkl
+src/training/model/*.joblib
+
+# Generated reports
+reports/histograms/
+reports/shap/
+reports/figures/
+
+# OS files
+.DS_Store
+Thumbs.db
