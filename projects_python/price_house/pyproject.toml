@@ -1,0 +1,10 @@
+[tool.pyright]
+include = ["src"]
+exclude = ["**/__pycache__", "models", "artifacts", "reports"]
+extraPaths = ["src"]
+venvPath = "."
+venv = ".venv"
+pythonVersion = "3.11"
+typeCheckingMode = "basic"
+useLibraryCodeForTypes = true
+reportMissingTypeStubs = false

@@ -1,0 +1,9 @@
+# Runtime dependencies plus editor/type-checking support.
+-r requirements.txt
+
+# Third-party type stubs for packages that do not provide complete inline types.
+pandas-stubs
+types-PyYAML
+
+# Static type checker; VS Code's Pylance can also use pyrightconfig settings.
+pyright

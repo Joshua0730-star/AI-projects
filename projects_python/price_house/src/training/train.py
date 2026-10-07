@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader, TensorDataset
 import numpy as np
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import mlflow
-import mlflow.pytorch
+import mlflow.pytorch as mlflow_pytorch
 from pathlib import Path
 import yaml
 import sys
@@ -16,6 +16,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import random
 import math
+from pydantic import BaseModel, Field
 
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -87,6 +88,14 @@ def save_histogram(x, name_features):
     plt.savefig(folder_path / "histogramas.png")
     plt.close(fig)
     print(f"Grafico guardado en {folder_path}")
+
+
+class LossConfig(BaseModel):
+    name: str
+
+TYPES_LOSS = {
+    "MSELoss": nn.MSELoss()
+    }
 
 def build_loss(loss_config):
     name = loss_config.get("name")
@@ -370,8 +379,8 @@ def train_model(config_path):
         torch.save(model.state_dict(), model_path)
 
         # Log model to MLflow with input_example to avoid pt2 error
-        input_example = X_test_tensor[:1].cpu()  # Use first test sample as example
-        mlflow.pytorch.log_model(
+        input_example = X_test_tensor[:1].detach().cpu().numpy()
+        mlflow_pytorch.log_model(
             model,
             "model",
             input_example=input_example,

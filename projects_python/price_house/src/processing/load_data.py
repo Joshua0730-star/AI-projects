@@ -4,6 +4,8 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import RobustScaler, PolynomialFeatures
 from sklearn.datasets import fetch_california_housing
+from sklearn.utils import Bunch
+from typing import cast
 import joblib
 from pathlib import Path
 
@@ -29,9 +31,12 @@ def load_california_housing_data(test_size=0.2, random_state=42, feature_enginee
         tuple: (X_train, X_val, X_test, y_train, y_val, y_test, scaler, all_features)
     """
     # Load full dataset from scikit-learn
-    housing = fetch_california_housing()
-    X_full, y_full = housing.data, housing.target
-    feature_names = housing.feature_names
+    # The current scikit-learn overload allows the return type to include a tuple
+    # even with return_X_y=False, so narrow it to the Bunch form used here.
+    housing = cast(Bunch, fetch_california_housing(return_X_y=False, as_frame=False))
+    X_full: np.ndarray = np.asarray(housing.data)
+    y_full: np.ndarray = np.asarray(housing.target)
+    feature_names = list(housing.feature_names)
 
     if feature_engineering:
         # # Transformaciones logarítmicas para características asimétricas
@@ -95,6 +100,8 @@ def load_california_housing_data(test_size=0.2, random_state=42, feature_enginee
         test_size=test_size,
         random_state=random_state
     )
+    X_train_full, X_test = np.asarray(X_train_full), np.asarray(X_test)
+    y_train_full, y_test = np.asarray(y_train_full), np.asarray(y_test)
 
     ##64% para entrenamiento, 16% para validación y 20% para test.
     X_train, X_val, y_train, y_val = train_test_split(
@@ -102,15 +109,17 @@ def load_california_housing_data(test_size=0.2, random_state=42, feature_enginee
     test_size=0.2,
     random_state=random_state,
 )
+    X_train, X_val = np.asarray(X_train), np.asarray(X_val)
+    y_train, y_val = np.asarray(y_train), np.asarray(y_val)
 
     # Scale features (fit on training data only, transform both)
     scaler = RobustScaler()
 
     scaler.fit(X_train)
 
-    X_train = scaler.transform(X_train)
-    X_val = scaler.transform(X_val)
-    X_test = scaler.transform(X_test)
+    X_train = cast(np.ndarray, scaler.transform(X_train))
+    X_val = cast(np.ndarray, scaler.transform(X_val))
+    X_test = cast(np.ndarray, scaler.transform(X_test))
 
     print(f"Dataset loaded:")
     print(f"  Total samples: {X_full.shape[0]}")
@@ -143,7 +152,7 @@ def load_preprocessor(load_path):
         load_path (str): Path to load the preprocessor from
 
     Returns:
-        scaler: Loaded StandardScaler
+        scaler: Loaded RobustScaler
     """
     scaler = joblib.load(load_path)
     print(f"Preprocessor loaded from: {load_path}")

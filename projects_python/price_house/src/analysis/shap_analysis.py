@@ -77,11 +77,12 @@ def analyze_with_shap(model, X_test, feature_names, save_dir="reports/shap"):
     X_sample = X_test[:sample_size]
 
     # Usar PermutationExplainer (más robusto para PyTorch)
-    explainer = shap.Explainer(model_wrapper, X_sample)
+    explainer = shap.Explainer(model_wrapper, X_sample, feature_names=feature_names)
 
     # Calcular valores SHAP
     shap_values = explainer(X_sample)
-    shap_values.feature_names = feature_names
+    if isinstance(shap_values, list):
+        shap_values = shap_values[0]
 
     # 1. Gráfico de barras (importancia global)
     plt.figure(figsize=(10, 6))

@@ -54,6 +54,21 @@ python src/training/train.py --config config/training/experiments/08-price_house
 
 La configuración por defecto del script es el experimento 1; se recomienda pasar `--config` explícitamente para que quede claro qué YAML se está ejecutando. La URI de seguimiento configurada es `http://127.0.0.1:5000`.
 
+## Autocompletado y tipos en VS Code
+
+El entorno virtual del proyecto es `projects_python/price_house/.venv`. En VS Code, selecciona ese intérprete con `Ctrl+Shift+P` → **Python: Select Interpreter** → **Enter interpreter path...** → `.venv/Scripts/python.exe`. Si abres todo el repositorio como workspace, asegúrate de elegir el intérprete que está dentro de `projects_python/price_house`; el `.venv` de la raíz es otro entorno y puede no tener PyTorch instalado. Después ejecuta **Developer: Reload Window** para que Pylance vuelva a indexar los paquetes.
+
+Para instalar los stubs y el verificador de tipos dentro del entorno del proyecto:
+
+```powershell
+cd projects_python/price_house
+.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+```
+
+PyTorch debe estar instalado en el intérprete seleccionado para que `import torch.nn as nn` pueda sugerir clases como `Linear`, `Sequential`, `MSELoss` y `HuberLoss`. `requirements-dev.txt` añade stubs para PyYAML y pandas, además de Pyright. La sección `[tool.pyright]` de `pyproject.toml` activa análisis gradual en modo básico y resuelve los imports desde `src/`. Puedes ejecutar el análisis desde esta carpeta con `pyright`.
+
+Las anotaciones ayudan al editor a mostrar nombres, parámetros y tipos, pero no convierten Python en un lenguaje con tipos obligatorios ni garantizan que una operación sea válida en tiempo de ejecución. Algunas librerías solo tienen cobertura parcial; cuando no publican stubs compatibles, la calidad del autocompletado puede variar.
+
 ## Datos y evaluación
 
 California Housing contiene 20,640 filas, ocho variables originales y el objetivo `MedHouseVal`. El objetivo está expresado en unidades de 100,000 dólares: por ejemplo, `0.5` representa $50,000. No se escala el objetivo en este pipeline.
